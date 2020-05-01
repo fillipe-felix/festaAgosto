@@ -19,15 +19,19 @@ public class ProductService {
     }
 
     public Product findById(Long id) {
-       Optional<Product> obj = productRepository.findById(id);
-       return obj.get();
+        Optional<Product> obj = productRepository.findById(id);
+        return obj.get();
     }
 
-    public void update(Product produto){
-        productRepository.save(produto);
+    public Product insert(Product obj) {
+        return productRepository.save(obj);
     }
 
-    public Product update(Long id, Product obj){
+    public void delete(Long id) {
+        productRepository.deleteById(id);
+    }
+
+    public Product update(Long id, Product obj) {
         //O getOne apenas prepara o objeto, nao pega ele direto no banco de dados
         Product entity = productRepository.getOne(id);
         updateData(entity, obj);
