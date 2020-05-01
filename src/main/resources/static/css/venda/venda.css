@@ -1,0 +1,19 @@
+.centerTd{
+    text-align: center;
+    padding-left: 15px;
+padding-right: 15px;
+}
+.centerTh{
+    text-align: center;
+}
+.tamInput{
+    width: 200px;
+}
+#btnDelete{
+    text-align: right;
+  
+}
+
+.centerText{
+    text-align: center;
+}

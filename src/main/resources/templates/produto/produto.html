@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org/" th:replace="~{default :: layout(~{::title}, ~{::section})}">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Produto </title>
+    <style>
+        .centralizar-td {
+            text-align: center; /* alinhamento horizontal */
+            vertical-align: middle; /* alinhamento vertical */
+        }
+    </style>
+</head>
+<body>
+<section>
+    <section class="content">
+        <div class="card card-dark" id="mydiv">
+            <div class="card-header">
+                <h1 class="card-title">Lista de Produtos</h1>
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body">
+                <table id="paginacaoProduto" class="table table-bordered table-hover">
+                    <thead>
+                    <tr>
+                        <th>Codigo</th>
+                        <th>Nome</th>
+                        <th>Tipo</th>
+                        <th>Valor</th>
+                        <th>Editar</th>
+                        <th>Excluir</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="produto : ${produto}" id="reload">
+                        <td scope="row" th:text="${produto.id}"></td>
+                        <td scope="row" th:text="${produto.name}"></td>
+                        <td scope="row" th:text="${produto.description}"></td>
+                        <td scope="row" th:text="${produto.price}"></td>
+                        <td scope="row">
+                            <a type="button" th:href="@{/products/(Id=${produto.id})}"
+                               class="btn-floating btn-sm blue eBtn"
+                            ><i class="fas fa-pen" aria-hidden="true"></i></a>
+                        </td>
+                        <td scope="row">
+                            <a type="button" class="btn-floating btn-sm red deleteBtn"
+                               th:href="@{/produto/(Id=${produto.id})}" ><i class="fas fa-trash text-danger"
+                                                                    aria-hidden="true"></i></a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Modal Editar  -->
+    <div class="modal fade" id="modalEditar">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Editar Produto</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+
+                    <p class="h4 mb-4">Produto Id: </p>
+
+                    <!-- ID -->
+                    <input type="text" class="form-control mb-4" placeholder="Id" readonly="" id="id-produto">
+                    <!-- Name -->
+                    <input type="text" class="form-control mb-4" placeholder="Nome" id="nome-produto">
+
+                    <!-- Subject -->
+                    <label>Tipo</label>
+                    <select class="browser-default custom-select mb-4" id="tipo-produto">
+                        <option value="" disabled>Selecione um Tipo</option>
+                        <option value="BEBIDA" selected>BEBIDA</option>
+                        <option value="COMIDA">COMIDA</option>
+                        <option value="SOBREMESA">SOBREMESA</option>
+                        <option value="OUTROS">OUTROS</option>
+                    </select>
+
+                    <!-- Email -->
+                    <input type="number" class="form-control mb-4" placeholder="Preço" id="preco-produto">
+
+                    <!-- Message -->
+                    <div class="form-group">
+                    <textarea class="form-control rounded-0" rows="3"
+                              placeholder="Descrição" id="descricao-produto"></textarea>
+                    </div>
+
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
+                    <button type="button" class="btn btn-primary btnEditarProduto"><i class="fas fa-save">Salvar</i>
+                    </button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <!-- /modal editar -->
+
+    <!-- Modal Deletar-->
+    <!--Modal: modalConfirmDelete-->
+    <div class="modal fade" id="modalConfirmDelete" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-sm modal-notify modal-danger" role="document">
+            <!--Content-->
+            <div class="modal-content text-center">
+                <!--Header-->
+                <div class="modal-header d-flex justify-content-center">
+                    <p class="heading">Deseja realmente deletar esse produto?</p>
+                </div>
+
+                <!--Body-->
+                <div class="modal-body">
+
+                    <i class="fas fa-times fa-4x animated rotateIn"></i>
+
+                </div>
+
+                <!--Footer-->
+                <div class="modal-footer flex-center">
+                    <a href="" class="btn  btn-outline-danger btnDeletarProduto">Sim</a>
+                    <a type="button" class="btn  btn-danger waves-effect" data-dismiss="modal">Nao</a>
+                </div>
+            </div>
+            <!--/.Content-->
+        </div>
+    </div>
+    <!--Modal: modalConfirmDelete-->
+    <!--/Modal Deletar-->
+
+</section>
+</body>
+</html>

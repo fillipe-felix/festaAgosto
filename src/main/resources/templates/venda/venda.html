@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org/"
+      th:replace="~{default :: layout(~{::title}, ~{::section})}">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+
+
+    <title>Item Venda</title>
+    <style>
+        .tbodyTest {
+            align-items: center;
+            padding-left: 0px;
+        }
+
+        .labelModel {
+            text-align: left;
+        }
+
+    </style>
+
+</head>
+<body>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <!-- left column -->
+            <div class="col-md-12">
+                <!-- general form elements -->
+                <div class="card card-dark">
+                    <div class="card-header">
+                        <h3 class="card-title">Venda PDV</h3>
+                    </div>
+                    <!-- /.card-header -->
+                    <!-- form start -->
+                    <form role="form">
+                        <div class="card-body">
+                            <div class="form-group">
+
+                                <select class="form-control  selectVenda" id="produtoSelect">
+                                    <input type="hidden" id="idvenda" value="0">
+
+                                </select>
+                            </div>
+                            <div id="li-content-wrapper">
+                                <table class="table teste" >
+                                    <thead>
+                                    <tr>
+                                        <th style="width:30vw">Produto</th>
+                                        <th class="centerTh">Preço</th>
+                                        <th class="centerTh">Qtd</th>
+                                        <th class="centerTh">Subtotal</th>
+                                        <th class="centerTh">Informação</th>
+                                        <th class="centerTh">Excluir</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody class="tbodyTest" id="tabelaitem">
+                                    </tbody>
+                                    <tfoot>
+
+                                    </tfoot>
+                                </table>
+                            </div>
+                            <div class="d-flex justify-content-end">
+                                <div><h2>Total:</h2></div>
+                                <div><h3 id="totalVenda" class="total mb-0 mt-1 ml-2">R$0,00</h3></div>
+                            </div>
+                        </div>
+
+                    </form>
+                    <!-- /.card-body -->
+                    <div class="card-footer d-flex bd-highlight mb-">
+                        <button type="button" class="btn btn-danger mr-auto p-2 bd-highlight" onclick='cancelarVenda();'>Cancelar Venda</button>
+                        <button type="button" data-toggle="modal" data-target="#modalPagamento"
+                                class="btn btn-success p-2 bd-highlight btnPagamento ">Pagamento
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Modal Editar  -->
+    <div class="modal fade" id="modalVenda">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Informação Sobre o Produto</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <!-- /.idt -->
+                        <label for="message-text" class="col-form-label labelModal">ID</label>
+                        <input type="text" class="form-control mb-4" placeholder="Id" readonly="" id="id-produto-venda">
+
+                        <label for="message-text" class="col-form-label labelModal">Nome Produto</label>
+                        <input type="text" class="form-control mb-4" placeholder="Nome" readonly=""
+                               id="nome-produto-venda">
+
+                        <label for="message-text" class="col-form-label labelModal">Tipo Produto</label>
+                        <input type="text" class="form-control mb-4" placeholder="Nome" readonly=""
+                               id="tipo-produto-venda">
+
+
+                        <label for="message-text" class="col-form-label labelModal">Preço(unitário)</label>
+                        <input type="text" class="form-control mb-4" placeholder="Preço" readonly=""
+                               id="preco-produto-venda">
+
+                        <div class="form-group">
+                            <label for="message-text" class="col-form-label labelModal">Descrição</label>
+                            <textarea class="form-control rounded-0" rows="3" placeholder="Descrição" readonly=""
+                                      id="descricao-produto-venda"></textarea>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <!-- /modal editar -->
+
+
+    <!-- Modal Editar  -->
+    <div class="modal fade" id="modalPagamento">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Pagamento</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-xs-5 col-md-5">
+                            <div class="form-group">
+                                <label for="razao" class="control-label">Valor Pago</label>
+                                <div class="controls">
+                                    <input type="text" class="form-control" id="vlrpago" name="vlrpago">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-xs-5 col-md-5">
+                            <div class="form-group">
+                                <label for="razao" class="control-label">Pagar em</label>
+                                <div class="controls">
+                                    <select name="pgto" id="pgto" class="form-control">
+                                        <option> Dinheiro</option>
+                                        <option> Credito</option>
+                                        <option> Debito</option>
+                                        <option> Funcionário</option>
+                                        <option> Outros</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-2 col-md-2">
+                            <div class="form-group">
+                                <label for="razao" class="control-label">Add Pgto</label>
+                                <div class="controls centerText p-1">
+                                    <a type='button' id="btnAddPagamento" class='btn-floating btn-sm red modalError '><i class='fas fa-plus '
+                                                                                                 aria-hidden='true'></i></a>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+                   
+                    <div class="row">
+                        <div class="col-xs-6 col-md-6">
+                            <div class="form-group">
+                                <label for="razao" class="control-label">Total de Itens</label>
+                                <div class="controls">
+                                    <input type="text" class="form-control" id="totalitens" name="totalitens"
+                                           readonly="">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-6 col-md-6">
+                            <div class="form-group">
+                                <label for="razao" class="control-label">Total Pago</label>
+                                <div class="controls">
+                                    <input type="text" class="form-control" id="totalpago" name="totalpago" readonly="">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-6 col-md-6">
+                            <div class="form-group">
+                                <label for="razao" class="control-label">Total a Pagar</label>
+                                <div class="controls">
+                                    <input type="text" class="form-control" id="totalpagar" name="totalpagar"
+                                           readonly="">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-6 col-md-6">
+                            <div class="form-group">
+                                <label for="razao" class="control-label">Troco</label>
+                                <div class="controls">
+                                    <input type="text" class="form-control" id="troco" name="troco" readonly="">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12 col-md-12">
+                            <div class="form-group">
+                                <label for="razao" class="control-label">Observações</label>
+                                <div class="controls">
+                                    <textarea class="form-control" id="obs" name="obs"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <table class="table teste">
+                        <thead>
+                            <tr style ="background-color: #343a40; color: white">
+                             <th>Pagamento</th>
+                            <th>Modo</th>
+                            <th>Valor</th>
+                        </tr>
+                        </thead>
+                        <tbody id="tablePgto">
+
+                        </tbody>
+                    </table>
+
+                    <div class="modal-footer justify-content-between">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
+                        <button type="button" class="btn btn-success" id="btncadastrar" name="btncadastrar">
+                            Finalizar
+                        </button>
+                    </div>
+                </div>
+
+
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <!-- /modal editar -->
+
+
+</section>
+
+
+</body>
+
+
+</html>
