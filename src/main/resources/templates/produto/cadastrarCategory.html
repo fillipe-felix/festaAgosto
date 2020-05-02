@@ -1,0 +1,27 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org/" th:replace="~{default :: layout(~{::title}, ~{::section})}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Cadastrar Produto</title>
+</head>
+<body>
+<section>
+    <div class="card-body">
+        <div class="form-group">
+            <label>Nome</label>
+            <input id="idnome" type="text" class="form-control" placeholder="Escreva o nome da categoria" name="nome">
+        </div>
+    </div>
+    <!-- /.card-body -->
+
+    <div class="card-footer">
+        <button type="submit" class="btn btn-success btnCadastrarCategoria modalSuccess modalError"><i
+                class="fas fa- btnCadastrarCategoria" aria-hidden="true"></i>Cadastrar
+        </button>
+    </div>
+</section>
+</body>
+</html>

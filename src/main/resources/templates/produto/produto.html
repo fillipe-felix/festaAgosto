@@ -34,18 +34,18 @@
                     </thead>
                     <tbody>
                     <tr th:each="produto : ${produto}" id="reload">
-                        <td scope="row" th:text="${produto.id}"></td>
-                        <td scope="row" th:text="${produto.name}"></td>
-                        <td scope="row" th:text="${produto.description}"></td>
-                        <td scope="row" th:text="${produto.price}"></td>
+                        <td scope="row" id="idProduto" th:text="${produto.id}"></td>
+                        <td scope="row" id="nameProduto" th:text="${produto.name}"></td>
+                        <td scope="row" id="descriptionProduto" th:text="${produto.description}"></td>
+                        <td scope="row" id="priceProduto" th:text="${produto.price}"></td>
                         <td scope="row">
-                            <a type="button" th:href="@{/products/(Id=${produto.id})}"
+                            <a type="button" th:href="@{/products/}"
                                class="btn-floating btn-sm blue eBtn"
                             ><i class="fas fa-pen" aria-hidden="true"></i></a>
                         </td>
                         <td scope="row">
                             <a type="button" class="btn-floating btn-sm red deleteBtn"
-                               th:href="@{/produto/(Id=${produto.id})}" ><i class="fas fa-trash text-danger"
+                               th:href="@{/produto/}" ><i class="fas fa-trash text-danger"
                                                                     aria-hidden="true"></i></a>
                         </td>
                     </tr>

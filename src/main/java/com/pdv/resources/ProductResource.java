@@ -32,7 +32,7 @@ public class ProductResource {
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<Product> findById(@PathVariable Long id) {
+    public ResponseEntity<Product> findById(@PathVariable("id") Long id) {
         Product obj = productService.findById(id);
         return ResponseEntity.ok().body(obj);
     }
@@ -42,6 +42,12 @@ public class ProductResource {
         obj = productService.insert(obj);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(obj.getId()).toUri();
         return ResponseEntity.created(uri).body(obj);
+    }
+
+    @RequestMapping("/register")
+    public ModelAndView register(Product product){
+
+        return new ModelAndView("produto/cadastrarProduto");
     }
 
 

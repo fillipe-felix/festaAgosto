@@ -2,17 +2,21 @@
 $('document').ready(function () {
     $('.table .eBtn').on('click', function (event) {
 
+        var id = $(this).parent().parent().find("#idProduto").text();
+        var name = $(this).parent().parent().find("#nameProduto").text();
+        var description = $(this).parent().parent().find("#descriptionProduto").text();
+        var price = $(this).parent().parent().find("#priceProduto").text();
+
         event.preventDefault();
 
-        var href = $(this).attr('href');
+        $('#id-produto').val(id);
+        $('#nome-produto').val(name);
+        $('#preco-produto').val(price);
+        $('#tipo-produto').val();
+        $('#descricao-produto').val(description);
 
-        $.get(href, function (produto) {
-            $('#id-produto').val(produto.id);
-            $('#nome-produto').val(produto.nome);
-            $('#preco-produto').val(produto.preco);
-            $('#tipo-produto').val(produto.tipoProduto);
-            $('#descricao-produto').val(produto.descricaoProduto);
-        })
+
+        //alert(produto.id).value;
         $('#modalEditar').modal();
     });
 });
@@ -31,10 +35,10 @@ $(document).ready(function () {
         );
 
         var produto = {
-            nome: document.getElementById("idnome").value,
+            name: document.getElementById("idnome").value,
             tipoProduto: value,
-            preco: precoFormat,
-            descricaoProduto: document.getElementById("idDescricao").value,
+            price: precoFormat,
+            description: document.getElementById("idDescricao").value,
         }
         $.ajax({
             type: "POST",
@@ -86,20 +90,20 @@ $(document).ready(function () {
         var select = document.getElementById("tipo-produto");
         var value = select.options[select.selectedIndex].value;
 
-        var preco = document.getElementById("preco-produto").value;
-        var precoFormat = preco.toLocaleString(
+        var price = document.getElementById("preco-produto").value;
+        var precoFormat = price.toLocaleString(
             'pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2, style: 'currency', currency: 'BRL'}
         );
 
         var produto = {
-            nome: document.getElementById("nome-produto").value,
+            name: document.getElementById("nome-produto").value,
             tipoProduto: value,
-            preco: precoFormat,
-            descricaoProduto: document.getElementById("descricao-produto").value,
+            price: precoFormat,
+            description: document.getElementById("descricao-produto").value,
         }
         $.ajax({
             type: "PUT",
-            url: "/api/produto/update/" + id,
+            url: "/products/" + id,
             data: JSON.stringify(produto),
             datatype: 'json',
             contentType: "application/json; charset=utf-8",
@@ -143,23 +147,21 @@ $(document).ready(function () {
 });
 
 
-
 //deleta um produto na tabela
 $(document).ready(function () {
     $('.table .deleteBtn').on('click', function (event) {
 
+        var id = $(this).parent().parent().find("#idProduto").text();
+
         event.preventDefault();
 
-        var href = $(this).attr('href');
-
-        $.get(href, function (produto) {
-            var id = produto.id;
-            //$('#modalConfirmDelete').modal();
-            console.log(id)
-
-            /*$.ajax({
+        console.log(id)
+        $('#modalConfirmDelete').modal();
+        $('.btnDeletarProduto').on('click', function (event) {
+            console.log("Deu bom")
+            $.ajax({
                 type: "DELETE",
-                url: "/api/produto/delete/" + id,
+                url: "/products/" + id,
                 //data: JSON.stringify(produto),
                 datatype: 'json',
                 contentType: "application/json; charset=utf-8",
@@ -197,8 +199,9 @@ $(document).ready(function () {
                     })
                     alert(id)
                 }
-            });*/
+            });
         });
+
     });
 });
 

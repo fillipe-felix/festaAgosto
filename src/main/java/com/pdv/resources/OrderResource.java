@@ -53,8 +53,8 @@ public class OrderResource {
 
     @PostMapping("/add")
     public ResponseEntity<Order> register(@Valid @RequestBody final Order order) {
-        Optional<User> opUser = Optional.ofNullable(userService.findById(1L));
-        Order v = new Order(null, Instant.now(), OrderStatus.PAID, opUser.get());
+        Optional<User> optionalUser = Optional.ofNullable(userService.findById(1L));
+        Order v = new Order(null, Instant.now(), OrderStatus.PAID, optionalUser.get());
         orderService.save(v);
         return ResponseEntity.ok().body(v);
     }
@@ -63,15 +63,15 @@ public class OrderResource {
     @RequestMapping("/getById")
     @ResponseBody
     public Optional<Order> getById(final Long id) {
-        final Optional<Order> ivDTO = orderService.getVendaById(id);
-        return ivDTO;
+        final Optional<Order> orderItem = orderService.getVendaById(id);
+        return orderItem;
     }
 
     @RequestMapping("/getDesc")
     @ResponseBody
     public OrderItem getDesc(final String desc) {
-        OrderItem ivDTO = orderService.getDesc(desc);
-        return ivDTO;
+        OrderItem orderItem = orderService.getDesc(desc);
+        return orderItem;
     }
 
     @RequestMapping(path = "/subtotal/{desc}/{qntd}", method = RequestMethod.GET)

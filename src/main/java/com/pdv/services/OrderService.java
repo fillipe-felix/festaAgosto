@@ -40,20 +40,20 @@ public class OrderService {
     }
 
     public OrderItem getDesc(String desc) {
-        Optional<Product> opProduto = produtoRepository.findByDesc(desc);
-        OrderItem itemVenda = new OrderItem(opProduto.get());
-        itemVenda.setQuantity(1);
-        itemVenda.setPrice(opProduto.get().getPrice());
-        itemVenda.setOrder(venda);
-        orderItemRepository.save(itemVenda);
-        return itemVenda;
+        Optional<Product> optionalProduct = produtoRepository.findByDesc(desc);
+        OrderItem orderItem = new OrderItem(optionalProduct.get());
+        orderItem.setQuantity(1);
+        orderItem.setPrice(optionalProduct.get().getPrice());
+        orderItem.setOrder(venda);
+        orderItemRepository.save(orderItem);
+        return orderItem;
     }
 
     public OrderItem getSubTotal(String desc, int qntd) {
-        Optional<Product> opProduto = produtoRepository.findByDesc(desc);
-        OrderItem itemVenda = new OrderItem(venda, opProduto.get(), qntd, opProduto.get().getPrice());
-        itemVenda.getSubTotal();
-        return itemVenda;
+        Optional<Product> optionalProduct = produtoRepository.findByDesc(desc);
+        OrderItem orderItem = new OrderItem(venda, optionalProduct.get(), qntd, optionalProduct.get().getPrice());
+        orderItem.getSubTotal();
+        return orderItem;
     }
 
     public List<Order> list() {
