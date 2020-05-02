@@ -1,11 +1,11 @@
 package com.pdv.entities.enums;
 
 public enum TypePayment {
-    DINHEIRO(1),
-    CREDITO(2),
-    DEBITO(3),
-    FUNCIONARIO(4),
-    OUTROS(5);
+    Dinheiro(1),
+    Crédito(2),
+    Débito(3),
+    Funcionário(4),
+    Outros(5);
 
     private int code;
 

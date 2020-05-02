@@ -109,13 +109,14 @@ public class OrderService {
         return orderRepository.findById(id);
     }
 
-    public Order orgerClean() {
+    public Order orderClean() {
         Order order = new Order(OrderStatus.CANCELED);
         return this.order = (Order) order;
     }
 
     public Payment addPayment(Payment payment){
-
+        payment.setCodigo(order.getPayments().size()+1);
+        order.getPayments().add(payment);
         return payment;
     }
 

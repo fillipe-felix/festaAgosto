@@ -78,7 +78,7 @@ $(".btnPagamento").on('click', function () {
         contentType: "application/json; charset=utf-8",
 
         success: function (data) {
-            alert("venda  = " + JSON.stringify(data));
+           // alert("venda  = " + JSON.stringify(data));
             valorTotal = data.total;
 
         },
@@ -104,9 +104,9 @@ $(document).ready(function () {
     $("#btnAddPagamento").on('click', function () {
         var select = document.getElementById("pgto");
         var typePayment = select.options[select.selectedIndex].value;
-        var value = document.getElementById("vlrpago").value;
+        var valuePayment = document.getElementById("vlrpago").value;
 
-        if (!value || value == 0) {
+        if (!valuePayment || valuePayment == 0) {
             const Toast = Swal.mixin({
                 toast: true,
                 position: 'top-end',
@@ -119,24 +119,26 @@ $(document).ready(function () {
             })
         } else {
             var payment = {
-                name: document.getElementById("idnome").value,
                 typePayment: typePayment,
-                value: value,
+                value: realParaNumber(valuePayment),
             }
+
+            alert(JSON.stringify(payment));
             $.ajax({
                 type: "POST",
-                url: "/orders/pay",
+                url: "/orders/payment/add",
                 data: JSON.stringify(payment),
                 datatype: 'json',
                 contentType: "application/json; charset=utf-8",
 
                 success: function (data) {
+                    alert("deu bom")
                     //console.log(JSON.stringify(data));
 
                     tr = $('<tr/>');
-                    tr.append("<td class = 'nome'>" + pagamento + "</td>");
-                    tr.append("<td class = 'nome'>" + tipoPagamento + "</td>");
-                    tr.append("<td class = 'nome'>" + valor + "</td>");
+                    tr.append("<td>" +data.codigo+ "</td>");
+                    tr.append("<td>" +data.typePayment + "</td>");
+                    tr.append("<td><span>"+converteFloatMoeda(data.value)+"</span></td>");
                     $('#tablePgto').append(tr);
 
                     const Toast = Swal.mixin({
@@ -222,21 +224,22 @@ $(document).ready(function () {
 //CLEAN OBEJECT IN ORDER
 $(document).ready(function () {
     $("#openOrder").on('click', function () {
+
         $.ajax({
             async: null,
             type: "POST",
             url: "/orders/clean",
-            data: "{}",
             dataType: 'json',
-            contentType: "application/json; charset=utf-8",
-            success: function (obj) {
+            contentType: "application/json",
+            success: function () {
+
             },
             error: function () {
-                alert("Erros, entre em contato com o TI")
+                alert("aconteceu algo inesperado, entre em contato com o TI");
 
             }
-        });
 
+        });
     });
 });
 

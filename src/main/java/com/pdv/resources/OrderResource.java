@@ -62,16 +62,15 @@ public class OrderResource {
         orderService.save(v);
         return ResponseEntity.ok().body(v);
     }
-    @PostMapping("/add")
-    public ResponseEntity<Payment> addPayment(@Valid @RequestBody final Payment payment) {
-    //    Payment payment  = orderService.addPayment(payment);
+    @PostMapping("/payment/add")
+    public ResponseEntity<Payment> addPayment(@RequestBody  Payment payment) {
+       Payment newPayment  = orderService.addPayment(payment);
         return ResponseEntity.ok().body(payment);
     }
 
-    @PostMapping("/clean")
-    public ResponseEntity<Order> cleanOrder(@Valid @RequestBody final Order order) {
-        Optional<User> optionalUser = Optional.ofNullable(userService.findById(1L));
-        Order orderClean = orderService.orgerClean();
+    @RequestMapping(path = "/clean", method = RequestMethod.POST)
+    public ResponseEntity<Order> cleanOrder() {
+        Order orderClean = orderService.orderClean();
         return ResponseEntity.ok().body(orderClean);
     }
 
