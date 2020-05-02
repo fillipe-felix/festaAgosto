@@ -2,13 +2,16 @@ package com.pdv.services;
 
 import com.pdv.entities.Order;
 import com.pdv.entities.OrderItem;
+import com.pdv.entities.Payment;
 import com.pdv.entities.Product;
+import com.pdv.entities.enums.OrderStatus;
 import com.pdv.repositories.OrderItemRepository;
 import com.pdv.repositories.OrderRepository;
 import com.pdv.repositories.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,7 +24,7 @@ public class OrderService {
     private ProductRepository produtoRepository;
     @Autowired
     private OrderItemRepository orderItemRepository;
-    private Order venda = new Order();
+    private Order order = new Order(OrderStatus.WAITING_PAYMENT);
 
 
     public List<Order> findAll() {
@@ -33,27 +36,69 @@ public class OrderService {
         return obj.get();
     }
 
-    public Order save(Order venda) {
-        orderRepository.save(venda);
-        this.venda = venda;
-        return venda;
+    public Order save(Order order) {
+        orderRepository.save(order);
+        this.order = order;
+        return order;
     }
 
+    public void delete(String desc) {
+        removeItemVenda(desc);
+    }
+
+    //add OrderItem WITH description
     public OrderItem getDesc(String desc) {
         Optional<Product> optionalProduct = produtoRepository.findByDesc(desc);
         OrderItem orderItem = new OrderItem(optionalProduct.get());
-        orderItem.setQuantity(1);
-        orderItem.setPrice(optionalProduct.get().getPrice());
-        orderItem.setOrder(venda);
-        orderItemRepository.save(orderItem);
+        if (checkIfExistsOrderItem(orderItem.getProduct())) {
+            orderItem.setQuantity(1);
+            orderItem.setPrice(optionalProduct.get().getPrice());
+            order.getItems().add(orderItem);
+            return orderItem;
+        }
+        return null;
+    }
+
+    public OrderItem getSubTotal(String desc, int quantity) {
+        Optional<Product> optionalProduct = produtoRepository.findByDesc(desc);
+        OrderItem orderItem = attQuantidadeItemVenda(optionalProduct.get(), quantity);
+        orderItem.getSubTotal();
         return orderItem;
     }
 
-    public OrderItem getSubTotal(String desc, int qntd) {
-        Optional<Product> optionalProduct = produtoRepository.findByDesc(desc);
-        OrderItem orderItem = new OrderItem(venda, optionalProduct.get(), qntd, optionalProduct.get().getPrice());
-        orderItem.getSubTotal();
-        return orderItem;
+
+    private OrderItem attQuantidadeItemVenda(Product product, int quantity) {
+        for (OrderItem oi : order.getItems()) {
+            if (oi.getProduct().getName().equals(product.getName())) {
+                oi.setQuantity(quantity);
+                return oi;
+            }
+        }
+        return null;
+    }
+
+    private Boolean checkIfExistsOrderItem(Product product) {
+        for (OrderItem oi : order.getItems()) {
+            if (oi.getProduct().getName().equals(product.getName())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private Boolean removeItemVenda(String name) {
+        for (OrderItem oi : order.getItems()) {
+            if (oi.getProduct().getName().equals(name)) {
+                order.getItems().remove(oi);
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    public Order getTotal() {
+        return this.order;
     }
 
     public List<Order> list() {
@@ -62,6 +107,16 @@ public class OrderService {
 
     public Optional<Order> getVendaById(Long id) {
         return orderRepository.findById(id);
+    }
+
+    public Order orgerClean() {
+        Order order = new Order(OrderStatus.CANCELED);
+        return this.order = (Order) order;
+    }
+
+    public Payment addPayment(Payment payment){
+
+        return payment;
     }
 
 

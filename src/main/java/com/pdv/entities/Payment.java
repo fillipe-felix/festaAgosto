@@ -1,6 +1,7 @@
 package com.pdv.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.pdv.entities.enums.TypePayment;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -15,6 +16,9 @@ public class Payment implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Instant moment;
+    private Integer codigo;
+    private TypePayment typePayment;
+    private Double value;
 
     @JsonIgnore
     @OneToOne
@@ -52,6 +56,30 @@ public class Payment implements Serializable {
 
     public void setOrder(Order order) {
         this.order = order;
+    }
+
+    public Integer getCodigo() {
+        return codigo;
+    }
+
+    public void setCodigo(Integer codigo) {
+        this.codigo = codigo;
+    }
+
+    public TypePayment getTypePayment() {
+        return typePayment;
+    }
+
+    public void setTypePayment(TypePayment typePayment) {
+        this.typePayment = typePayment;
+    }
+
+    public Double getValue() {
+        return value;
+    }
+
+    public void setValue(Double value) {
+        this.value = value;
     }
 
     @Override

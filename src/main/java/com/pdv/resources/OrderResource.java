@@ -2,16 +2,14 @@ package com.pdv.resources;
 
 import com.pdv.entities.Order;
 import com.pdv.entities.OrderItem;
+import com.pdv.entities.Payment;
 import com.pdv.entities.User;
 import com.pdv.entities.enums.OrderStatus;
 import com.pdv.services.OrderService;
-import com.pdv.services.ProductService;
 import com.pdv.services.UserService;
-import com.pdv.util.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -48,15 +46,33 @@ public class OrderResource {
     public ResponseEntity<Order> findById(@PathVariable Long id) {
         Order obj = orderService.findById(id);
         return ResponseEntity.ok().body(obj);
+
     }
 
-
+    @RequestMapping(path = "/remove/{name}", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<OrderItem> delete(@PathVariable final String name) {
+        orderService.delete(name);
+        return ResponseEntity.noContent().build();
+    }
     @PostMapping("/add")
     public ResponseEntity<Order> register(@Valid @RequestBody final Order order) {
         Optional<User> optionalUser = Optional.ofNullable(userService.findById(1L));
         Order v = new Order(null, Instant.now(), OrderStatus.PAID, optionalUser.get());
         orderService.save(v);
         return ResponseEntity.ok().body(v);
+    }
+    @PostMapping("/add")
+    public ResponseEntity<Payment> addPayment(@Valid @RequestBody final Payment payment) {
+    //    Payment payment  = orderService.addPayment(payment);
+        return ResponseEntity.ok().body(payment);
+    }
+
+    @PostMapping("/clean")
+    public ResponseEntity<Order> cleanOrder(@Valid @RequestBody final Order order) {
+        Optional<User> optionalUser = Optional.ofNullable(userService.findById(1L));
+        Order orderClean = orderService.orgerClean();
+        return ResponseEntity.ok().body(orderClean);
     }
 
 
@@ -80,5 +96,11 @@ public class OrderResource {
         return orderService.getSubTotal(desc, qntd);
     }
 
+    @GetMapping(value = "/total")
+    public ResponseEntity<Order> getTotal() {
+       Order order =  orderService.getTotal();
+        return ResponseEntity.ok().body(order);
+
+    }
 
 }

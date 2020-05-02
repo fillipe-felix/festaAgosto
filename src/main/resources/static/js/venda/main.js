@@ -1,4 +1,5 @@
-$(document).ready(function () {
+$//GET ALL PRODUCTS IN DATABASE
+    (document).ready(function () {
     $.ajax({
         type: "get",
         url: "/products",
@@ -19,9 +20,8 @@ $(document).ready(function () {
     });
 });
 
-
+// SELECT ONE PRODUCT IN SELECT AND PUT A PRODUCT IN ORDER
 $(".selectVenda").on("change", function () {
-
     var x = document.getElementById("produtoSelect").selectedIndex;
     var y = document.getElementById("produtoSelect").options;
     // alert("Index: " + y[x].id + " is " + y[x].text);
@@ -42,12 +42,10 @@ $(".selectVenda").on("change", function () {
 
 })
 
-// chamar tabela na requisao ajax e adicionar + 1 item 
+//RETURN REQUEST WITH PRODUCT AND PUT IN TABLE
 function table(json) {
-
     var table = $('#tabelaitem');
     var qtd = 0;
-
     table.find('tr').each(function (i, el) {
         var $tds = $(this).find('td'),
             nome = $tds.eq(0).text()
@@ -58,21 +56,35 @@ function table(json) {
     });
     if (!qtd == 1) {
         tr = $('<tr/>');
-        tr.append("<td class = 'nome'>" + json.product.name+ "</td>");
+        tr.append("<td class = 'nome'>" + json.product.name + "</td>");
         tr.append("<td class = 'preco centerTd'> " + converteFloatMoeda(json.price) + "</td>");
         tr.append("<td class = 'centerTd'>" + "<input class ='col-3 quantidade tamInput' type='number' id='qqid' min='1'max='20' value='1' oninput='validity.valid ? this.save = value : value = this.save;' />" + "</td>");
         tr.append("<td class = 'subtotal centerTd' id = 'subtotal'><span class = 'spanSub'>" + converteFloatMoeda(json.subTotal) + "</span></td>");
         tr.append("<td class = 'centerTd'> <a data-toggle = 'modal' data-target='#modalVenda 'type='button' class='btn-floating btn-sm red informacao'><i class='fas fa-info text-info' aria-hidden='true'></i></a></td>")
         tr.append("<td class = 'centerTd'> <a type='button' class='btn-floating btn-sm red btnDelete' ><i class='fas fa-trash text-danger' aria-hidden='true'></i></a></td>")
         $('#tabelaitem').append(tr);
-        somaTable();
+        sumTable();
     }
 }
 
 $(".btnPagamento").on('click', function () {
+    var valorTotal;
+    $.ajax({
+        async: null,
+        type: "GET",
+        url: "/orders/total",
+        data: $('#order').serialize(),
+        datatype: 'json',
+        contentType: "application/json; charset=utf-8",
 
-    var valorTotal = document.getElementById("totalVenda").innerHTML;
-    valorTotal = valorTotal.replace("R$", "");
+        success: function (data) {
+            alert("venda  = " + JSON.stringify(data));
+            valorTotal = data.total;
+
+        },
+        error: function () {
+        }
+    });
 
     var quantidadeItens = 0;
     $(".quantidade").each(function () {
@@ -81,26 +93,20 @@ $(".btnPagamento").on('click', function () {
 
     $("#vlrpago").val("");
     $("#totalitens").val(quantidadeItens);
-    $("#totalpagar").val(valorTotal);
+    $("#totalpagar").val(converteFloatMoeda(valorTotal));
     $("#totalpago").val("0,00");
     $("#troco").val("0,00");
 
 });
 
-
+//add payment in table
 $(document).ready(function () {
     $("#btnAddPagamento").on('click', function () {
         var select = document.getElementById("pgto");
-        var tipoPagamento = select.options[select.selectedIndex].value;
-        var valor = document.getElementById("vlrpago").value;
-        var pagamento = $('#tablePgto tr').length;
-        var totalPago = 0;
+        var typePayment = select.options[select.selectedIndex].value;
+        var value = document.getElementById("vlrpago").value;
 
-        pagamento = 0 ? 1 : pagamento;
-
-
-        if (!valor || valor == 0) {
-
+        if (!value || value == 0) {
             const Toast = Swal.mixin({
                 toast: true,
                 position: 'top-end',
@@ -111,39 +117,76 @@ $(document).ready(function () {
                 type: 'error',
                 title: 'Não é aceito o campo valor em branco'
             })
-
-
         } else {
-            tr = $('<tr/>');
-            tr.append("<td class = 'nome'>" + pagamento + "</td>");
-            tr.append("<td class = 'nome'>" + tipoPagamento + "</td>");
-            tr.append("<td class = 'nome'>" + valor + "</td>");
-            $('#tablePgto').append(tr);
+            var payment = {
+                name: document.getElementById("idnome").value,
+                typePayment: typePayment,
+                value: value,
+            }
+            $.ajax({
+                type: "POST",
+                url: "/orders/pay",
+                data: JSON.stringify(payment),
+                datatype: 'json',
+                contentType: "application/json; charset=utf-8",
 
-            const Toast = Swal.mixin({
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false,
-                timer: 4000
+                success: function (data) {
+                    //console.log(JSON.stringify(data));
+
+                    tr = $('<tr/>');
+                    tr.append("<td class = 'nome'>" + pagamento + "</td>");
+                    tr.append("<td class = 'nome'>" + tipoPagamento + "</td>");
+                    tr.append("<td class = 'nome'>" + valor + "</td>");
+                    $('#tablePgto').append(tr);
+
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 6000
+                    });
+
+                    Toast.fire({
+                        type: 'success',
+                        title: 'Pagamento recebido com sucesso'
+                    })
+                },
+                error: function () {
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 6000
+                    });
+
+                    Toast.fire({
+                        type: 'error',
+                        title: 'Erro ao cadastrar o produto'
+                    })
+                }
             });
-
-            Toast.fire({
-                type: 'success',
-                title: 'Pagamento recebido com sucesso'
-            })
         }
-
-
     });
 });
 
+//RETURN SUM  ALL ITENS IN ORDER
+function sumTable() {
+    $.ajax({
+        async: null,
+        type: "GET",
+        url: "/orders/total",
+        data: $('#order').serialize(),
+        datatype: 'json',
+        contentType: "application/json; charset=utf-8",
 
-function somaTable() {
-    var soma = 0;
-    $(".spanSub").each(function () {
-        soma += realParaNumber($(this).html());
+        success: function (data) {
+            //  alert("venda  = "+JSON.stringify(data));
+            $(".total").text("R$ " + converteFloatMoeda(data.total));
+
+        },
+        error: function () {
+        }
     });
-    $(".total").text("R$ " + converteFloatMoeda(soma));
 };
 
 
@@ -151,34 +194,45 @@ function somaTable() {
 $(document).ready(function () {
     $("#tabelaitem").on('click', '.quantidade', function () {
         var currentRow = $(this).closest("tr");
-        var preco = currentRow.find(".preco").html();
+        var nome = currentRow.find(".nome").html();
         var quantidade = $(this).closest('tr').find('input').val();
-        var subtotal = realParaNumber(preco) * quantidade;
+        var subtotal;
+        $.ajax({
+            async: null,
+            type: "GET",
+            url: "/orders/subtotal/" + nome + "/" + quantidade + "",
+            data: $('#produto').serialize(),
+            datatype: 'json',
+            contentType: "application/json; charset=utf-8",
+
+            success: function (data) {
+                subtotal = data.subTotal;
+                // alert(JSON.stringify(data));
+            },
+            error: function () {
+            }
+        });
         $(this).closest('tr').find('span').html(converteFloatMoeda(subtotal));
 
-        var soma = 0;
-        $(".spanSub").each(function () {
-            soma += realParaNumber($(this).html());
-        });
-        $(".total").text("R$ " + converteFloatMoeda(soma));
+        sumTable();
 
     });
 });
 
+//CLEAN OBEJECT IN ORDER
 $(document).ready(function () {
-    $("#abreVenda").on('click', function () {
+    $("#openOrder").on('click', function () {
         $.ajax({
             async: null,
             type: "POST",
-            url: "/orders/add",
+            url: "/orders/clean",
             data: "{}",
             dataType: 'json',
             contentType: "application/json; charset=utf-8",
             success: function (obj) {
-                alert("Abriu venda")
             },
             error: function () {
-                alert("Deu ruim")
+                alert("Erros, entre em contato com o TI")
 
             }
         });
@@ -188,13 +242,27 @@ $(document).ready(function () {
 
 $(document).ready(function () {
     $("#tabelaitem").on('click', '.btnDelete', function () {
+        var currentRow = $(this).closest("tr");
+        var name = currentRow.find(".nome").html();
+
+        $.ajax({
+            async: null,
+            type: "GET",
+            url: "/orders/remove/" + name + "",
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            success: function () {
+
+            },
+            error: function () {
+                alert("aconteceu algo inesperado, entre em contato com o TI");
+
+            }
+
+        });
         $(this).closest("tr").remove();
 
-        var soma = 0;
-        $(".spanSub").each(function () {
-            soma += realParaNumber($(this).html());
-        });
-        $(".total").text("R$ " + converteFloatMoeda(soma));
+        sumTable();
     });
 });
 
