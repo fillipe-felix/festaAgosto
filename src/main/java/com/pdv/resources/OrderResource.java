@@ -55,6 +55,7 @@ public class OrderResource {
         orderService.delete(name);
         return ResponseEntity.noContent().build();
     }
+
     @PostMapping("/add")
     public ResponseEntity<Order> register(@Valid @RequestBody final Order order) {
         Optional<User> optionalUser = Optional.ofNullable(userService.findById(1L));
@@ -62,10 +63,15 @@ public class OrderResource {
         orderService.save(v);
         return ResponseEntity.ok().body(v);
     }
+
     @PostMapping("/payment/add")
-    public ResponseEntity<Payment> addPayment(@RequestBody  Payment payment) {
-       Payment newPayment  = orderService.addPayment(payment);
-        return ResponseEntity.ok().body(payment);
+    public ResponseEntity<Payment> addPayment(@RequestBody Payment payment) {
+        boolean devolvePagamento = orderService.addPayment(payment);
+        if (devolvePagamento) {
+            return ResponseEntity.ok().body(payment);
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @RequestMapping(path = "/clean", method = RequestMethod.POST)
@@ -97,7 +103,7 @@ public class OrderResource {
 
     @GetMapping(value = "/total")
     public ResponseEntity<Order> getTotal() {
-       Order order =  orderService.getTotal();
+        Order order = orderService.getTotal();
         return ResponseEntity.ok().body(order);
 
     }

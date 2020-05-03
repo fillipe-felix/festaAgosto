@@ -1,12 +1,14 @@
 package com.pdv.entities;
 
-import com.pdv.entities.enums.OrderStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.pdv.entities.enums.OrderStatus;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -20,19 +22,16 @@ public class Order implements Serializable {
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "GMT")
     private Instant moment;
-
     private Integer orderStatus;
-
     //@JsonIgnore
     @ManyToOne
     @JoinColumn(name = "client_id")
     private User client;
-
     @OneToMany(mappedBy = "id.order")
     private Set<OrderItem> items = new HashSet<>();
-
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
-    private Set<Payment> payments = new HashSet<>();
+    private List<Payment> payments = new ArrayList<Payment>();
+
 
     public Order() {
     }
@@ -74,6 +73,7 @@ public class Order implements Serializable {
 
     }
 
+
     public User getClient() {
         return client;
     }
@@ -90,11 +90,11 @@ public class Order implements Serializable {
         this.items = items;
     }
 
-    public Set<Payment> getPayments() {
+    public List<Payment> getPayments() {
         return payments;
     }
 
-    public void setPayments(Set<Payment> payments) {
+    public void setPayments(List<Payment> payments) {
         this.payments = payments;
     }
 

@@ -19,6 +19,9 @@ public class Payment implements Serializable {
     private Integer codigo;
     private TypePayment typePayment;
     private Double value;
+    private Double remainingValue;
+    private Double troco = 0.0;
+    private Double totalPago = 0.0;
 
     @JsonIgnore
     @ManyToOne
@@ -80,6 +83,30 @@ public class Payment implements Serializable {
 
     public void setValue(Double value) {
         this.value = value;
+    }
+
+    public Double getTroco() {
+        return troco;
+    }
+
+    public void setTroco(Double troco) {
+        this.troco = troco;
+    }
+
+    public Double getTotalPago() {
+        return totalPago;
+    }
+
+    public void setTotalPago(Double totalPago) {
+        this.totalPago = totalPago;
+    }
+
+    public Double getRemainingValue() {
+        return remainingValue;
+    }
+
+    public void setRemainingValue(Double remainingValue) {
+        this.remainingValue = remainingValue;
     }
 
     @Override

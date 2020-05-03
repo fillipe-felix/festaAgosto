@@ -105,7 +105,6 @@ $(document).ready(function () {
         var select = document.getElementById("pgto");
         var typePayment = select.options[select.selectedIndex].value;
         var valuePayment = document.getElementById("vlrpago").value;
-
         if (!valuePayment || valuePayment == 0) {
             const Toast = Swal.mixin({
                 toast: true,
@@ -118,13 +117,15 @@ $(document).ready(function () {
                 title: 'Não é aceito o campo valor em branco'
             })
         } else {
+
             var payment = {
                 typePayment: typePayment,
                 value: realParaNumber(valuePayment),
             }
 
-            alert(JSON.stringify(payment));
+          //  alert(JSON.stringify(payment));
             $.ajax({
+                async: null,
                 type: "POST",
                 url: "/orders/payment/add",
                 data: JSON.stringify(payment),
@@ -132,7 +133,6 @@ $(document).ready(function () {
                 contentType: "application/json; charset=utf-8",
 
                 success: function (data) {
-                    alert("deu bom")
                     //console.log(JSON.stringify(data));
 
                     tr = $('<tr/>');
@@ -140,6 +140,10 @@ $(document).ready(function () {
                     tr.append("<td>" +data.typePayment + "</td>");
                     tr.append("<td><span>"+converteFloatMoeda(data.value)+"</span></td>");
                     $('#tablePgto').append(tr);
+                    $("#totalpago").val(converteFloatMoeda(data.totalPago));
+                    $("#totalpagar").val(converteFloatMoeda(data.remainingValue));
+                    $("#troco").val(converteFloatMoeda(data.troco));
+
 
                     const Toast = Swal.mixin({
                         toast: true,
@@ -163,7 +167,7 @@ $(document).ready(function () {
 
                     Toast.fire({
                         type: 'error',
-                        title: 'Erro ao cadastrar o produto'
+                        title: 'Erro ao adicionar o pagamento'
                     })
                 }
             });
@@ -183,7 +187,7 @@ function sumTable() {
 
         success: function (data) {
             //  alert("venda  = "+JSON.stringify(data));
-            $(".total").text("R$ " + converteFloatMoeda(data.total));
+            $(".total").text(converteFloatMoeda(data.total));
 
         },
         error: function () {
@@ -317,47 +321,46 @@ $('.selectVenda').select2({
 });
 
 
-function converteFloatMoeda(valor) {
+function converteFloatMoeda(valor){
     var inteiro = null, decimal = null, c = null, j = null;
     var aux = new Array();
-    valor = "" + valor;
-    c = valor.indexOf(".", 0);
+    valor = ""+valor;
+    c = valor.indexOf(".",0);
     //encontrou o ponto na string
-    if (c > 0) {
+    if(c > 0){
         //separa as partes em inteiro e decimal
-        inteiro = valor.substring(0, c);
-        decimal = valor.substring(c + 1, valor.length);
-    } else {
+        inteiro = valor.substring(0,c);
+        decimal = valor.substring(c+1,valor.length);
+    }else{
         inteiro = valor;
     }
 
     //pega a parte inteiro de 3 em 3 partes
-    for (j = inteiro.length, c = 0; j > 0; j -= 3, c++) {
-        aux[c] = inteiro.substring(j - 3, j);
+    for (j = inteiro.length, c = 0; j > 0; j-=3, c++){
+        aux[c]=inteiro.substring(j-3,j);
     }
 
     //percorre a string acrescentando os pontos
     inteiro = "";
-    for (c = aux.length - 1; c >= 0; c--) {
-        inteiro += aux[c] + '.';
+    for(c = aux.length-1; c >= 0; c--){
+        inteiro += aux[c]+'.';
     }
     //retirando o ultimo ponto e finalizando a parte inteiro
 
-    inteiro = inteiro.substring(0, inteiro.length - 1);
+    inteiro = inteiro.substring(0,inteiro.length-1);
 
     decimal = parseInt(decimal);
-    if (isNaN(decimal)) {
+    if(isNaN(decimal)){
         decimal = "00";
-    } else {
-        decimal = "" + decimal;
-        if (decimal.length === 1) {
-            decimal = decimal + "0";
+    }else{
+        decimal = ""+decimal;
+        if(decimal.length === 1){
+            decimal = decimal+"0";
         }
     }
-    decimal = "" + decimal + "";
-    decimal = decimal.substr(0, 2);
 
-    valor = +inteiro + "," + decimal;
+
+    valor = "R$ "+inteiro+","+decimal;
 
 
     return valor;

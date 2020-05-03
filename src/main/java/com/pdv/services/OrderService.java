@@ -5,13 +5,13 @@ import com.pdv.entities.OrderItem;
 import com.pdv.entities.Payment;
 import com.pdv.entities.Product;
 import com.pdv.entities.enums.OrderStatus;
+import com.pdv.entities.enums.TypePayment;
 import com.pdv.repositories.OrderItemRepository;
 import com.pdv.repositories.OrderRepository;
 import com.pdv.repositories.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,6 +25,10 @@ public class OrderService {
     @Autowired
     private OrderItemRepository orderItemRepository;
     private Order order = new Order(OrderStatus.WAITING_PAYMENT);
+    private double remainingValue = 0;
+    private double totalValue = 0;
+    private boolean existTroco = false;
+    private boolean firtPayment = false;
 
 
     public List<Order> findAll() {
@@ -111,13 +115,67 @@ public class OrderService {
 
     public Order orderClean() {
         Order order = new Order(OrderStatus.CANCELED);
+        remainingValue = 0;
+        existTroco = false;
         return this.order = (Order) order;
     }
 
-    public Payment addPayment(Payment payment){
-        payment.setCodigo(order.getPayments().size()+1);
-        order.getPayments().add(payment);
-        return payment;
+    public Boolean addPayment(Payment payment) {
+
+        sumAllPayments();
+        if (order.getPayments().size() == 0 && payment.getValue() > order.getTotal() - sumAllPayments()) {
+            firtPayment = true;
+        }
+        if (order.getTotal() - sumAllPayments() == 0 || existTroco && order.getTotal() - sumAllPayments() > 0) {
+            return false;
+        }
+        if (payment.getValue() >= order.getTotal() - sumAllPayments() && firtPayment && TypePayment.Dinheiro.equals(payment.getTypePayment()) && !existTroco) {
+            calculaTroco(payment);
+            payment.setCodigo(order.getPayments().size() + 1);
+            payment.setRemainingValue(0.0);
+            payment.setTotalPago((sumAllPayments() + payment.getValue()) - payment.getTroco());
+            order.getPayments().add(payment);
+            existTroco = true;
+            return true;
+        } else if (payment.getValue() <= order.getTotal() - sumAllPayments() && TypePayment.Dinheiro.equals(payment.getTypePayment())) {
+            calculaRemainingValue();
+            payment.setCodigo(order.getPayments().size() + 1);
+            payment.setTotalPago(sumAllPayments() + payment.getValue());
+            payment.setRemainingValue(order.getTotal() - (sumAllPayments() + payment.getValue()));
+            order.getPayments().add(payment);
+            existTroco = false;
+            return true;
+        } else if (payment.getValue() <= order.getTotal() - sumAllPayments() && !TypePayment.Dinheiro.equals(payment.getTypePayment())) {
+            calculaRemainingValue();
+            payment.setCodigo(order.getPayments().size() + 1);
+            payment.setTotalPago(sumAllPayments() + payment.getValue());
+            payment.setRemainingValue(order.getTotal() - (sumAllPayments() + payment.getValue()));
+            order.getPayments().add(payment);
+            existTroco = false;
+            return true;
+        } else if (payment.getValue() > order.getTotal() - sumAllPayments() && TypePayment.Dinheiro.equals(payment.getTypePayment()) && !existTroco) {
+            calculaTroco(payment);
+            payment.setCodigo(order.getPayments().size() + 1);
+            payment.setRemainingValue(0.0);
+            payment.setTotalPago((sumAllPayments() + payment.getValue()) - payment.getTroco());
+            order.getPayments().add(payment);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
+    private double sumAllPayments() {
+        return totalValue = order.getPayments().stream().mapToDouble(Payment::getValue).sum();
+    }
+
+    private void calculaTroco(Payment payment) {
+        payment.setTroco((totalValue + payment.getValue()) - order.getTotal());
+    }
+
+    private void calculaRemainingValue() {
+        remainingValue = order.getTotal() - sumAllPayments();
     }
 
 
