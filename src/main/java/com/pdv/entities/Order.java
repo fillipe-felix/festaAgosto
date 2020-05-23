@@ -29,12 +29,15 @@ public class Order implements Serializable {
     private User client;
     @OneToMany(mappedBy = "id.order")
     private Set<OrderItem> items = new HashSet<>();
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "order")
     private List<Payment> payments = new ArrayList<Payment>();
+    private Double remainingValue;
+    private Double troco = 0D;
 
 
     public Order() {
     }
+
     public Order(OrderStatus orderStatus) {
         this.setOrderStatus(orderStatus);
     }
@@ -66,6 +69,10 @@ public class Order implements Serializable {
         return OrderStatus.valueOf(orderStatus);
     }
 
+    public Double getTroco() {
+        return troco;
+    }
+
     public void setOrderStatus(OrderStatus orderStatus) {
         if (orderStatus != null) {
             this.orderStatus = orderStatus.getCode();
@@ -73,6 +80,18 @@ public class Order implements Serializable {
 
     }
 
+    public Double getRemainingValue() {
+        double valuesPayments = payments.stream().mapToDouble(Payment::getValue).sum();
+        if (this.items.size() == 0) {
+            return this.getTotal();
+        } else if (valuesPayments > getTotal()) {
+            return this.remainingValue = 0D;
+
+        } else {
+            return this.remainingValue = getTotal() - valuesPayments;
+
+        }
+    }
 
     public User getClient() {
         return client;

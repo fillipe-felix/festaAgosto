@@ -39,7 +39,6 @@ $(".selectVenda").on("change", function () {
         error: function () {
         }
     });
-
 })
 
 //RETURN REQUEST WITH PRODUCT AND PUT IN TABLE
@@ -69,6 +68,7 @@ function table(json) {
 
 $(".btnPagamento").on('click', function () {
     var valorTotal;
+    var remainingValue;
     $.ajax({
         async: null,
         type: "GET",
@@ -80,7 +80,7 @@ $(".btnPagamento").on('click', function () {
         success: function (data) {
            // alert("venda  = " + JSON.stringify(data));
             valorTotal = data.total;
-
+            remainingValue = data.remainingValue;
         },
         error: function () {
         }
@@ -90,12 +90,14 @@ $(".btnPagamento").on('click', function () {
     $(".quantidade").each(function () {
         quantidadeItens += Number($(this).closest('tr').find('input').val());
     });
-
+        if(remainingValue > 0){
+            $("#troco").val(converteFloatMoeda(0));
+        }
     $("#vlrpago").val("");
     $("#totalitens").val(quantidadeItens);
-    $("#totalpagar").val(converteFloatMoeda(valorTotal));
-    $("#totalpago").val("0,00");
-    $("#troco").val("0,00");
+    $("#totalpagar").val(converteFloatMoeda(remainingValue));
+   // $("#totalpago").val("0,00");
+    //$("#troco").val("0,00");
 
 });
 
@@ -195,6 +197,30 @@ function sumTable() {
     });
 };
 
+
+btncadastrar
+//CLOSE ORDER
+$(document).ready(function () {
+    $("#btncadastrar").on('click', function () {
+
+        $.ajax({
+            async: null,
+            type: "POST",
+            url: "/orders/addAndClose",
+            dataType: 'json',
+            contentType: "application/json",
+            success: function () {
+                alert("Venda Finalizada com sucesso");
+
+            },
+            error: function () {
+                alert("aconteceu algo inesperado, entre em contato com o TI");
+
+            }
+
+        });
+    });
+});
 
 //SUBTOTAL
 $(document).ready(function () {

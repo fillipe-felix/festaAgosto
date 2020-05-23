@@ -8,10 +8,12 @@ import com.pdv.entities.enums.OrderStatus;
 import com.pdv.entities.enums.TypePayment;
 import com.pdv.repositories.OrderItemRepository;
 import com.pdv.repositories.OrderRepository;
+import com.pdv.repositories.PaymentRepository;
 import com.pdv.repositories.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,6 +26,9 @@ public class OrderService {
     private ProductRepository produtoRepository;
     @Autowired
     private OrderItemRepository orderItemRepository;
+    @Autowired
+    private PaymentRepository paymentRepository;
+
     private Order order = new Order(OrderStatus.WAITING_PAYMENT);
     private double remainingValue = 0;
     private double totalValue = 0;
@@ -43,6 +48,21 @@ public class OrderService {
     public Order save(Order order) {
         orderRepository.save(order);
         this.order = order;
+        return order;
+    }
+
+    public Order closeOrder() {
+        order.setOrderStatus(OrderStatus.SHIPPED);
+        order.setMoment(Instant.now());
+        order.getItems().stream().forEach(a -> {
+            a.setOrder(order);
+        });
+        orderRepository.save(order);
+        orderItemRepository.saveAll(order.getItems());
+        order.getPayments().stream().forEach(a -> {
+            a.setOrder(order);
+        });
+        paymentRepository.saveAll(order.getPayments());
         return order;
     }
 
@@ -102,6 +122,7 @@ public class OrderService {
 
 
     public Order getTotal() {
+        order.getRemainingValue();
         return this.order;
     }
 
@@ -121,7 +142,9 @@ public class OrderService {
     }
 
     public Boolean addPayment(Payment payment) {
-
+        if (order.getRemainingValue() > 0) {
+            existTroco = false;
+        }
         sumAllPayments();
         if (order.getPayments().size() == 0 && payment.getValue() > order.getTotal() - sumAllPayments()) {
             firtPayment = true;

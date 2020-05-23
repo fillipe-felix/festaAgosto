@@ -56,6 +56,12 @@ public class OrderResource {
         return ResponseEntity.noContent().build();
     }
 
+    @RequestMapping(path = "/addAndClose", method = RequestMethod.POST)
+    public ResponseEntity<Order> addAndClose() {
+        Order order = orderService.closeOrder();
+        return ResponseEntity.ok().body(order);
+    }
+
     @PostMapping("/add")
     public ResponseEntity<Order> register(@Valid @RequestBody final Order order) {
         Optional<User> optionalUser = Optional.ofNullable(userService.findById(1L));

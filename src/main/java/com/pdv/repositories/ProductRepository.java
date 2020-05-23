@@ -11,6 +11,8 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Query(value = "SELECT * FROM tb_product p WHERE p.name = :desc " ,nativeQuery = true)
     Optional<Product> findByDesc(@Param("desc")String desc);
 
+    
+
 
 
 }
